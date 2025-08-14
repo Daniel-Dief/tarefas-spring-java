@@ -7,6 +7,7 @@ import com.ifsc.tarefas.model.Tarefa;
 import com.ifsc.tarefas.repository.TarefaRepository;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -75,4 +76,21 @@ public class TarefaServices {
     }
 
 
+    // api para deletar uma tarefa
+    // recebe um id pra saber qual tarefa eu quero deletar
+    @DeleteMapping("deletar/{id}")
+    public ResponseEntity<Tarefa> deletarTarefa(@PathVariable Long id) {
+        // verifico se esse id existe no meu banco
+        // ! <--- negação 
+        // se NÃO existe 
+        if(!tarefaRepository.existsById(id)){
+            // deu merda, gato 404 - nao encontrou
+            return ResponseEntity.notFound().build();
+        }
+
+        // vou no banco e deleto só o cara que mandei na URL
+        tarefaRepository.deleteById(id);
+        // gato 200 - deu bom!!
+        return ResponseEntity.ok().build();
+    }
 }
