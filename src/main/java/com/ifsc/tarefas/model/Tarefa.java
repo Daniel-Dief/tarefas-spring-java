@@ -1,13 +1,19 @@
 package com.ifsc.tarefas.model;
 
 import java.time.LocalDate;
+import java.util.List;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 
 
 // entidade do banco, cria uma tabela em nosso banco h2 a tabela tarefa e 
@@ -20,13 +26,29 @@ public class Tarefa {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     // private = não posso acessar esse atributo fora da classe, outros tipos também usados: public e protected
     // estrutura java: primeiro o tipo da variavel, depois o nome da variavel
+    
+
+    // nome da coluna no banco
+    @Column(name = "tarefa_id")
+    // nome do atributo no back
     private Long id;
+
     private String titulo;
     private String descricao;
     private String responsavel;
     private LocalDate dataCriacao = LocalDate.now();
     private LocalDate dataLimite;
 
+
+
+    // List é bom para se usar para criar listas
+    // lista de categorias:
+
+    // Many to one digo que essa lista de categorias pertence 
+    // a essa tarefa
+    // O fetch type eager faz com que ele carregue tudo de uma vez
+    // ja o lazy carrega um por um
+   
     @Enumerated(EnumType.STRING)
     private Status status;
 
@@ -81,9 +103,6 @@ public class Tarefa {
     public void setDataLimite(LocalDate dataLimite) {
         this.dataLimite = dataLimite;
     }
-
-
-
 
     
 }
