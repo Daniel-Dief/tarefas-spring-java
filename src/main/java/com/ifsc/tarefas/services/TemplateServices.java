@@ -4,8 +4,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.ifsc.tarefas.model.Prioridade;
 import com.ifsc.tarefas.model.Status;
@@ -46,7 +48,7 @@ public class TemplateServices {
         model.addAttribute("prioridades", Prioridade.values());
         // e dos status
         model.addAttribute("listaStatus", Status.values());
-        return "nova-tarefa";
+        return "tarefa";
     }
 
     // Api que vai salvar o formulario
@@ -58,4 +60,28 @@ public class TemplateServices {
         // redireciona depois de salvar direto pra listagem
         return "redirect:/templates/listar";
     }
+
+    // deletar uma terefa com thymelaf
+    @PostMapping("/{id}/excluir")
+    String excluir(@PathVariable Long id) {
+        tarefaRepository.deleteById(id);
+        return "redirect:/templates/listar";
+    }
+
+    // pagina de editar
+    @GetMapping("/{id}/editar")
+    String editar(@PathVariable Long id, Model model) {
+        // vai procurar tarefas pelo id, se n achar
+        var tarefa = tarefaRepository.findById(id).orElse(null);
+        if(tarefa == null) {
+            // retornar para pagina inicial
+            return "redirect:/templates/listar";
+        }
+        // adiciona a tarefa que vai ser editada e todo o resto ao template do formulario
+        model.addAttribute("tarefa", tarefa);
+        model.addAttribute("prioridades", Prioridade.values());
+        model.addAttribute("listaStatus", Status.values());
+        return "tarefa";
+    }
+
 }

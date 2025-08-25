@@ -21,8 +21,17 @@
             - <span th:text="${tarefa.descricao}">Descrição</span>
             - <span th:text="${tarefa.prioridade}"> Prioridade</span>
             - <span th:text="${tarefa.status}"> Status </span>
-
+                        <span>
+                <a th:href="@{'/templates/' + ${tarefa.id} + '/editar'}">Editar</a> 
+            </span>
+            <span>
+                <form th:action="@{'/templates/' + ${tarefa.id} + '/excluir'}" method="post">
+                    <button onclick="return confirm('Tem certeza que deseja excluir?')" 
+                    type="submit">Excluir</button>
+                </form>
+            </span>
             </li>
+
         </ul>
      </div>
 
