@@ -12,6 +12,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
@@ -39,7 +41,18 @@ public class Tarefa {
     private LocalDate dataCriacao = LocalDate.now();
     private LocalDate dataLimite;
 
-
+    // cria uma relação de muitos para muitos
+    @ManyToMany
+    // criar uma tabela intermediaria que tem o id da tarefa e categoria
+    @JoinTable(
+        // nome tabela
+        name = "tarefa_categoria",
+        // o atributo desse objeto que se juntara a tabela intermediaria
+        joinColumns = @JoinColumn(name = "tarefa_id"),
+        // o atributo do outro objeto que se juntara a tabela intermediaria
+        inverseJoinColumns = @JoinColumn(name = "categoria_id")
+    )
+    private List<Categoria> categorias;
 
     // List é bom para se usar para criar listas
     // lista de categorias:
@@ -102,6 +115,12 @@ public class Tarefa {
     }
     public void setDataLimite(LocalDate dataLimite) {
         this.dataLimite = dataLimite;
+    }
+    public List<Categoria> getCategorias() {
+        return categorias;
+    }
+    public void setCategorias(List<Categoria> categorias) {
+        this.categorias = categorias;
     }
 
     

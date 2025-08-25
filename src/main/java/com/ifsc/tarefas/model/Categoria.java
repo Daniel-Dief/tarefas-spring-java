@@ -1,5 +1,9 @@
 package com.ifsc.tarefas.model;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -7,6 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 
 // categoria tabela
@@ -19,9 +24,14 @@ public class Categoria {
    private Long id;
 
    private String nome;
+   // Json ignore pra n mostrar essa coluna, evitando um erro de loop infinito 
+   // tarefa -> categoria -> tarefa -> categoria e etc
+   @JsonIgnore
+   // To dizendo que quem manda nessa relação de muitos para muitos é o tarefa
+   @ManyToMany(mappedBy = "categorias")
+   private List<Tarefa> tarefas;
 
-
-    public Long getId() {
+   public Long getId() {
     return id;
    }
    public void setId(Long id) {
@@ -32,6 +42,13 @@ public class Categoria {
    }
    public void setNome(String nome) {
     this.nome = nome;
+   }
+   
+   public List<Tarefa> getTarefas() {
+      return tarefas;
+   }
+   public void setTarefas(List<Tarefa> tarefas) {
+      this.tarefas = tarefas;
    } 
    
 
