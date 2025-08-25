@@ -1,6 +1,8 @@
 package com.ifsc.tarefas.model;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -29,7 +31,8 @@ public class Categoria {
    @JsonIgnore
    // To dizendo que quem manda nessa relação de muitos para muitos é o tarefa
    @ManyToMany(mappedBy = "categorias")
-   private List<Tarefa> tarefas;
+   // hash set são listas que não aceitam repetição
+   private Set<Tarefa> tarefas = new HashSet<>();
 
    public Long getId() {
     return id;
@@ -43,14 +46,12 @@ public class Categoria {
    public void setNome(String nome) {
     this.nome = nome;
    }
-   
-   public List<Tarefa> getTarefas() {
+   public Set<Tarefa> getTarefas() {
       return tarefas;
    }
-   public void setTarefas(List<Tarefa> tarefas) {
+   public void setTarefas(Set<Tarefa> tarefas) {
       this.tarefas = tarefas;
-   } 
-   
+   }
 
 
    

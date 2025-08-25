@@ -1,7 +1,9 @@
 package com.ifsc.tarefas.model;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -52,7 +54,8 @@ public class Tarefa {
         // o atributo do outro objeto que se juntara a tabela intermediaria
         inverseJoinColumns = @JoinColumn(name = "categoria_id")
     )
-    private List<Categoria> categorias;
+    // hash set são listas que não aceitam repetição
+    private Set<Categoria> categorias = new HashSet<>();
 
     // List é bom para se usar para criar listas
     // lista de categorias:
@@ -116,12 +119,12 @@ public class Tarefa {
     public void setDataLimite(LocalDate dataLimite) {
         this.dataLimite = dataLimite;
     }
-    public List<Categoria> getCategorias() {
+    public Set<Categoria> getCategorias() {
         return categorias;
     }
-    public void setCategorias(List<Categoria> categorias) {
+    public void setCategorias(Set<Categoria> categorias) {
         this.categorias = categorias;
     }
-
+ 
     
 }
