@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de tarefas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <!-- adicionando css com thymelaf :  -->
 <link rel="stylesheet" th:href="@{/style.css}">
@@ -21,20 +23,23 @@
             - <span th:text="${tarefa.descricao}">Descrição</span>
             - <span th:text="${tarefa.prioridade}"> Prioridade</span>
             - <span th:text="${tarefa.status}"> Status </span>
-                        <span>
-                <a th:href="@{'/templates/' + ${tarefa.id} + '/editar'}">Editar</a> 
-            </span>
-            <span>
-                <form th:action="@{'/templates/' + ${tarefa.id} + '/excluir'}" method="post">
-                    <button onclick="return confirm('Tem certeza que deseja excluir?')" 
-                    type="submit">Excluir</button>
-                </form>
-            </span>
+                <span>
+                    <a th:href="@{'/templates/' + ${tarefa.id} + '/editar'}">Editar</a> 
+                </span>
+                <span> 
+                    <a th:href="@{'/templates/' + ${tarefa.id} + '/associar-categoria'}">Associar categoria</a> 
+                </span>
+                <span>
+                    <form th:action="@{'/templates/' + ${tarefa.id} + '/excluir'}" method="post">
+                        <button onclick="return confirm('Tem certeza que deseja excluir?')" 
+                        type="submit">Excluir</button>
+                    </form>
+                </span>
             </li>
 
         </ul>
      </div>
 
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

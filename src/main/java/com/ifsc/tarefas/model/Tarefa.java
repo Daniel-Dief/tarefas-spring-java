@@ -18,6 +18,10 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 
 // entidade do banco, cria uma tabela em nosso banco h2 a tabela tarefa e 
@@ -30,17 +34,27 @@ public class Tarefa {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     // private = não posso acessar esse atributo fora da classe, outros tipos também usados: public e protected
     // estrutura java: primeiro o tipo da variavel, depois o nome da variavel
-    
-
-    // nome da coluna no banco
     @Column(name = "tarefa_id")
     // nome do atributo no back
     private Long id;
 
+    // nome da coluna no banco
+    // anotação para validação de campos, não pode ser vazio
+    @NotBlank(message = "O campo titulo é obrigatorio")
+    // O tamanho do campo deve ser entre 3 e
+    @Size(min = 3, max = 100, message = "O campo titulo deve ter entre 3 e 100 caracteres")
     private String titulo;
+    
+    @Size(max = 500, message = "O campo descricao deve ter no maximo 500 caracteres")
     private String descricao;
+
+    @NotBlank(message = "O campo responsavel é obrigatorio")
+    @Size(min = 3, max = 100, message = "O campo responsavel deve ter entre 3 e 100 caracteres")
     private String responsavel;
+
     private LocalDate dataCriacao = LocalDate.now();
+
+    @FutureOrPresent(message = "A data limite deve ser futura ou no presente")
     private LocalDate dataLimite;
 
     // cria uma relação de muitos para muitos
@@ -55,6 +69,7 @@ public class Tarefa {
         inverseJoinColumns = @JoinColumn(name = "categoria_id")
     )
     // hash set são listas que não aceitam repetição
+    
     private Set<Categoria> categorias = new HashSet<>();
 
     // List é bom para se usar para criar listas
@@ -65,9 +80,11 @@ public class Tarefa {
     // O fetch type eager faz com que ele carregue tudo de uma vez
     // ja o lazy carrega um por um
    
+    @NotNull(message = "O campo categorias é obrigatorio")
     @Enumerated(EnumType.STRING)
     private Status status;
 
+    @NotNull(message = "O campo prioridade é obrigatorio")
     @Enumerated(EnumType.STRING)
     private Prioridade prioridade;
 
