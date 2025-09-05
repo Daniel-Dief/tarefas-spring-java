@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,8 @@ import com.ifsc.tarefas.model.Tarefa;
 import com.ifsc.tarefas.model.Categoria;
 import com.ifsc.tarefas.repository.CategoriaRepository;
 import com.ifsc.tarefas.repository.TarefaRepository;
+
+import jakarta.validation.Valid;
 
 
 // anotação pra dizer que é um controller
@@ -62,9 +65,24 @@ public class TemplateServices {
     @PostMapping("/salvar")
     // modelAttribute vai pegar os dados do objeto do nome que passamos
     // e que veio na view
-    String salvar(@ModelAttribute("tarefa") Tarefa tarefa){
-        tarefaRepository.save(tarefa);
+    String salvar(@Valid @ModelAttribute("tarefa") Tarefa tarefa, BindingResult br, Model model, RedirectAttributes ra) {
         // redireciona depois de salvar direto pra listagem
+
+        // validação :
+        // vou ver se tem algum erro no formulario
+        if(br.hasErrors()){
+            model.addAttribute("tarefa", tarefa);
+            model.addAttribute("prioridades", Prioridade.values());
+            model.addAttribute("listaStatus", Status.values());
+            model.addAttribute("erros", "Erro ao salvar tarefa, preencha os campos corretamente.");
+            // se tiver erro volta pra pagina 
+            return "tarefa";
+        }
+
+        // Adiciona atributos quando voltar para a pagina listar
+        ra.addFlashAttribute("sucesso", "Tarefa salva com sucesso!");
+
+        tarefaRepository.save(tarefa);
         return "redirect:/templates/listar";
     }
 

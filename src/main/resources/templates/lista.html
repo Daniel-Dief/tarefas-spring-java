@@ -17,6 +17,10 @@
             <h1> TAREFAS CADASTRADAS</h1>
         </div>
         <ul class="tarefas" >
+            <div th:if="${sucesso != null}">
+                <p th:text="${sucesso}"></p>
+            </div>
+            
             <li class="tarefa-item" th:each="tarefa: ${tarefas}">
                 <!-- Pego a partir do loop os atributos do objeto tarefa -->
             <strong th:text="${tarefa.titulo}"> Título</strong> 

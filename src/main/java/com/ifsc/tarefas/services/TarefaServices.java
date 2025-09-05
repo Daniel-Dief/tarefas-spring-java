@@ -3,11 +3,16 @@ package com.ifsc.tarefas.services;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ifsc.tarefas.model.Prioridade;
+import com.ifsc.tarefas.model.Status;
 import com.ifsc.tarefas.model.Tarefa;
 import com.ifsc.tarefas.repository.CategoriaRepository;
 import com.ifsc.tarefas.repository.TarefaRepository;
 
 import jakarta.transaction.Transactional;
+
+import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -123,5 +128,30 @@ public class TarefaServices {
         tarefaRepository.save(tarefa.get());
         // retorna tudo ok 200
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/por-titulo/{titulo}")
+    public ResponseEntity<List<Tarefa>> buscarPorTitulo(@PathVariable String titulo) {
+        return ResponseEntity.ok(tarefaRepository.findByTitulo(titulo));
+    }
+
+    @GetMapping("/por-status/{status}")
+    public ResponseEntity<List<Tarefa>> buscarPorStatus(@PathVariable Status status) {
+        return ResponseEntity.ok(tarefaRepository.findByStatus(status));
+    }
+
+    @GetMapping("/por-responsavel/{responsavel}")
+    public ResponseEntity<List<Tarefa>> buscarPorResponsavel(@PathVariable String responsavel) {
+        return ResponseEntity.ok(tarefaRepository.findByResponsavel(responsavel));
+    }
+
+    @GetMapping("/por-prioridade/{prioridade}")
+    public ResponseEntity<List<Tarefa>> buscarPorPrioridade(@PathVariable Prioridade prioridade) {
+        return ResponseEntity.ok(tarefaRepository.findByPrioridade(prioridade));
+    }
+
+    @GetMapping("/vencidas")
+    public ResponseEntity<List<Tarefa>> buscarTarefasVencidas() {
+        return ResponseEntity.ok(tarefaRepository.findByDataLimiteBefore(LocalDate.now()));
     }
 }

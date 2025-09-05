@@ -10,6 +10,10 @@
     <!-- form para salvar, ação oq ele vai chamar, object com quem ele vai trabalhar, metodo que vai chamar-->
     <form th:action="@{/templates/salvar}"  method="post"  th:object="${tarefa}" >
 
+        <div th:if="${erros != null}" class="alert alert-danger" >
+            <p th:text="${erros}"></p>
+        </div>
+
         <div>
             <label> Título </label>
             <!-- field = atributo dentro do objeto, nesse caso, tarefa-->
