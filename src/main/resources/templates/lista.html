@@ -11,6 +11,32 @@
 <link rel="stylesheet" th:href="@{/style.css}">
 <body >
 
+
+    <!-- Utilizando tags do bootstrap : -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3> Filtros</h3>
+
+        </div>
+        <div class="card-container">
+            <!-- crio um form que vai chamar a api : -->
+            <form th:action="@{/templates/listar}" method="get">
+                <div class="row">
+                    <div class="col-md-6">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-search"></i>Pesquisar
+                        </button>
+                    </div>
+                    <div class="col-md-6">
+                        <button class="btn btn-danger">
+                           <i class="bi bi-x-circle"></i> Limpar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- vou criar algo como um  for nas terafas que passei la do template service-->
      <div class="tarefas-card">
         <div class="tarefas-card-header">
