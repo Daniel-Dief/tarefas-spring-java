@@ -15,3 +15,6 @@ VALUES
  ('Refatorar services', 'Separar responsabilidades', 'Igor', 'MEDIA', 'PENDENTE', CURRENT_DATE, '2026-08-28'),
  ('Revisar modelos', 'Ajustar entidade Categoria', 'Luiza', 'ALTA', 'PENDENTE', CURRENT_DATE, '2026-08-22'),
  ('Feedback cliente', 'Coletar feedback do protótipo', 'Time', 'MEDIA', 'PENDENTE', CURRENT_DATE, '2026-09-01');
+
+
+INSERT into users(username, password, role) VALUES ('admin', 'admin', 'ADMIN');
