@@ -1,6 +1,7 @@
 package com.ifsc.tarefas.services;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.ifsc.tarefas.model.Prioridade;
@@ -22,7 +24,6 @@ import com.ifsc.tarefas.repository.TarefaRepository;
 
 import jakarta.validation.Valid;
 
-
 // anotação pra dizer que é um controller
 @Controller
 @RequestMapping("/templates")
@@ -30,6 +31,7 @@ public class TemplateServices {
     private final TarefaRepository tarefaRepository;
     // adicionando o repositorio de categorias pra associar
     private final CategoriaRepository categoriaRepository;
+
     // colocar o nome dessa função o mesmo nome do arquivo que estamos atualmente:
     public TemplateServices(TarefaRepository tarefaRepository, CategoriaRepository categoriaRepository) {
         this.tarefaRepository = tarefaRepository;
@@ -38,20 +40,52 @@ public class TemplateServices {
 
     // pagina de listagem de tarefas
     @GetMapping("/listar")
-    // O model para adicionar atributos para minha view 
-    // o html no caso  
-    String listarTarefas(Model model){
+    // O model para adicionar atributos para minha view
+    // o html no caso
+    String listarTarefas(Model model, 
+            @RequestParam(required = false) String titulo,
+            @RequestParam(required = false) String responsavel, 
+            @RequestParam(required = false) Status status,
+            @RequestParam(required = false) Prioridade prioridade) {
         // o primeiro argumento é para como esse objeto sera chamado dentro da view
         // o segundo argumento é o objeto(s) que irei passar
-        model.addAttribute("tarefas", tarefaRepository.findAll());
+        // se eu tenho titulo e ele não é vazio
+        var tarefas = tarefaRepository.findAll();
+        if (titulo != null && !titulo.trim().isEmpty()) {
+            // Java transformando em stream
+            // filtra as tarefas pelo titulo
+            tarefas = tarefas.stream().filter(t -> t.getTitulo().toLowerCase().contains(titulo.toLowerCase())).toList();
+        }
+
+        if (responsavel != null && !responsavel.trim().isEmpty()) {
+            tarefas = tarefas.stream().filter(t -> t.getResponsavel().toLowerCase().contains(responsavel.toLowerCase()))
+                    .toList();
+        }
+
+        if (status != null) {
+            tarefas = tarefas.stream().filter(t -> t.getStatus() == status).collect(Collectors.toList());
+        }
+
+        if (prioridade != null) {
+            tarefas = tarefas.stream().filter(t -> t.getPrioridade() == prioridade).collect(Collectors.toList());
+        }
+
+        model.addAttribute("tarefas", tarefas);
+        model.addAttribute("listaPrioridade", Prioridade.values());
+        model.addAttribute("listaStatus", Status.values());
+
+        model.addAttribute("titulo", titulo);
+        model.addAttribute("status", status);
+        model.addAttribute("responsavel", responsavel);
+        model.addAttribute("prioridade", prioridade);
+
         // Vai dizer qual template eu quero usar
         return "lista";
     }
 
-
     // pagina de criar nova tarefa
     @GetMapping("/nova-tarefa")
-    String novaTarefa(Model model){
+    String novaTarefa(Model model) {
         // quem vamos salvar no banco
         model.addAttribute("tarefa", new Tarefa());
         // pegamos os valores e prioridade
@@ -65,17 +99,18 @@ public class TemplateServices {
     @PostMapping("/salvar")
     // modelAttribute vai pegar os dados do objeto do nome que passamos
     // e que veio na view
-    String salvar(@Valid @ModelAttribute("tarefa") Tarefa tarefa, BindingResult br, Model model, RedirectAttributes ra) {
+    String salvar(@Valid @ModelAttribute("tarefa") Tarefa tarefa, BindingResult br, Model model,
+            RedirectAttributes ra) {
         // redireciona depois de salvar direto pra listagem
 
         // validação :
         // vou ver se tem algum erro no formulario
-        if(br.hasErrors()){
+        if (br.hasErrors()) {
             model.addAttribute("tarefa", tarefa);
             model.addAttribute("prioridades", Prioridade.values());
             model.addAttribute("listaStatus", Status.values());
             model.addAttribute("erros", "Erro ao salvar tarefa, preencha os campos corretamente.");
-            // se tiver erro volta pra pagina 
+            // se tiver erro volta pra pagina
             return "tarefa";
         }
 
@@ -98,11 +133,12 @@ public class TemplateServices {
     String editar(@PathVariable Long id, Model model) {
         // vai procurar tarefas pelo id, se n achar
         var tarefa = tarefaRepository.findById(id).orElse(null);
-        if(tarefa == null) {
+        if (tarefa == null) {
             // retornar para pagina inicial
             return "redirect:/templates/listar";
         }
-        // adiciona a tarefa que vai ser editada e todo o resto ao template do formulario
+        // adiciona a tarefa que vai ser editada e todo o resto ao template do
+        // formulario
         model.addAttribute("tarefa", tarefa);
         model.addAttribute("prioridades", Prioridade.values());
         model.addAttribute("listaStatus", Status.values());
@@ -111,7 +147,7 @@ public class TemplateServices {
 
     // tela de associar tarefas e categorias
     @GetMapping("/{tarefaId}/associar-categoria")
-    String associarTarefaParaUmaCategoria(Model model, @PathVariable Long tarefaId){ 
+    String associarTarefaParaUmaCategoria(Model model, @PathVariable Long tarefaId) {
         // passar categorias
         // uso o repository pra buscar todas as categorias
         List<Categoria> categorias = categoriaRepository.findAll();
@@ -127,22 +163,21 @@ public class TemplateServices {
 
     }
 
-
     @PostMapping("/{tarefaId}/associar-categoria/{categoriaId}")
-    String associarTarefaParaUmaCategoria(@PathVariable Long tarefaId, @PathVariable Long categoriaId){
+    String associarTarefaParaUmaCategoria(@PathVariable Long tarefaId, @PathVariable Long categoriaId) {
         var tarefa = tarefaRepository.findById(tarefaId);
         var categoria = categoriaRepository.findById(categoriaId);
 
         // se não achar a tarefa ou a categoria retorna que não encontrou nada
-        if(tarefa.isEmpty() || categoria.isEmpty()){
+        if (tarefa.isEmpty() || categoria.isEmpty()) {
             return "redirect:/templates/listar";
         }
-        
+
         tarefa.get().getCategorias().add(categoria.get());
         // salva no banco
         tarefaRepository.save(tarefa.get());
         return "redirect:/templates/listar";
 
     }
- 
+
 }

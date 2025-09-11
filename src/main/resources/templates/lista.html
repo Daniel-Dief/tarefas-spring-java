@@ -12,36 +12,76 @@
 <body >
 
 
-    <!-- Utilizando tags do bootstrap : -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <h3> Filtros</h3>
-
-        </div>
-        <div class="card-container">
-            <!-- crio um form que vai chamar a api : -->
-            <form th:action="@{/templates/listar}" method="get">
-                <div class="row">
-                    <div class="col-md-6">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-search"></i>Pesquisar
-                        </button>
-                    </div>
-                    <div class="col-md-6">
-                        <button class="btn btn-danger">
-                           <i class="bi bi-x-circle"></i> Limpar
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <!-- vou criar algo como um  for nas terafas que passei la do template service-->
      <div class="tarefas-card">
         <div class="tarefas-card-header">
-            <h1> TAREFAS CADASTRADAS</h1>
+            <h1> TAREFAS CADASTRADAS  </h1>
         </div>
+        <!-- Utilizando tags do bootstrap : -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3> Filtros</h3>
+            </div>
+            <div class="card-container">
+                <form th:action="@{/templates/listar}" method="get" class="pb-2">
+                    <div class="row p-3 ">
+
+                        <div class="col-md-6">
+                            <label for="titulo" class="form-label"> Titulo </label>
+                            <input type="text" class="form-control" id="titulo" name="titulo"
+                                th:value="${titulo}" placeholder="Buscar pelo titulo">
+                        </div> 
+
+                        <div class="col-md-6">
+                            <label for="responsavel" class="form-label"> Responsavel </label>
+                            <input type="text" class="form-control" id="responsavel" name="responsavel"
+                                th:value="${responsavel}" placeholder="Buscar pelo responsavel" 
+                                >
+                        </div>  
+
+                        <div class="col-md-6">
+                            <label for="status" class="form-label"> Status </label>
+                            <select class="form-select" id="status" name="status">
+                                <option value=""> Todas </option>
+                                <option 
+                                    th:each="s : ${listaStatus}" 
+                                    th:value="${s}" 
+                                    th:text="${s}"
+                                    th:selected="${s == status}">
+                                ></option>
+                            </select>
+                        </div>  
+
+                        <div class="col-md-6">
+                            <label for="prioridade" class="form-label"> Prioridade </label>
+                            <select class="form-select" id="prioridade" name="prioridade">
+                                <option value=""> Todas </option>
+                                <option 
+                                    th:each="p : ${listaPrioridade}" 
+                                    th:value="${p}" 
+                                    th:text="${p}" 
+                                    th:selected="${p == prioridade}"></option>
+                            </select>
+                        </div>  
+                    </div>
+
+                    <!-- crio um form que vai chamar a api : -->
+                    <div class="row">
+                        <div class="col-md-6 d-flex justify-content-center align-items-center">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search"></i>Pesquisar
+                            </button>
+                        </div>
+                        <div class="col-md-6 d-flex justify-content-center align-items-center">
+                            <a class="btn btn-danger" th:href="@{/templates/listar}">
+                                <i class="bi bi-x-circle"></i> Limpar
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <ul class="tarefas" >
             <div th:if="${sucesso != null}">
                 <p th:text="${sucesso}"></p>
