@@ -3,6 +3,7 @@ package com.ifsc.tarefas.auth;
 import java.io.IOException;
 import java.util.Set;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -17,12 +18,12 @@ import jakarta.servlet.http.HttpServletResponse;
 public class AuthFilter extends OncePerRequestFilter {
 
     // final, não da de mudar ;)
-    private final AuthService authService;
+    private final AuthRepository authRepository;
     private final AntPathMatcher antPathMatcher = new AntPathMatcher();
     private final JwtUtil jwtUtil;
 
-    public AuthFilter(AuthService authService, JwtUtil jwtUtil) {
-        this.authService = authService;
+    public AuthFilter(AuthRepository authRepository, JwtUtil jwtUtil) {
+        this.authRepository = authRepository;
         this.jwtUtil = jwtUtil;
     }
 
@@ -62,7 +63,6 @@ public class AuthFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-    
         // pega o token
         String token = extractTokenFromCookie(request, "AUTH_TOKEN");
 
@@ -77,6 +77,40 @@ public class AuthFilter extends OncePerRequestFilter {
      
         }
 
+        // vlaida o token e pega o username  
+        var user = authRepository.validate(token);
+
+        if(user.isEmpty()){
+            // n tem usuario
+            // vamos redirecionar para tela de login
+            String accept = request.getHeader("Accept");
+            // se o que foi pedido foi um html (uma pagina) redireciona para a pagina login
+            if(accept != null && accept.contains("text/html")) {
+                String redirectTo = request.getRequestURI();
+                response.sendRedirect("/login?redirect=" + redirectTo);
+                return; 
+            }
+            // se não envia uma mensagem de erro 401 (Não autorizado)
+            // montando a resposta
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType("application/json");
+            response.getWriter().write("{\"error\": \"Unauthorized\"}");
+            return;
+        }
+        // pega o username do user
+        String username = user.get();
+        // seta o username no request
+        request.setAttribute("AUTH_USER", username);
+        // realiza um try catch para pegar o role
+        try {
+            String role = jwtUtil.getRole(token);
+            // se achou a role no token ok, se n pesquisa pelo o username
+            request.setAttribute("AUTH_ROLE", role != null ? role : authRepository.getRoleByUsername(username));
+        } catch (Exception e) {
+            request.setAttribute("AUTH_ROLE",  authRepository.getRoleByUsername(username));
+        }
+
+        filterChain.doFilter(request, response);
     }
 
     // função para extrair os cookies
@@ -91,6 +125,8 @@ public class AuthFilter extends OncePerRequestFilter {
                 return cookie.getValue();
             }
         }
+
+        
 
         // se nao encontrar o cookie de autentificação, retorna null
         return null;

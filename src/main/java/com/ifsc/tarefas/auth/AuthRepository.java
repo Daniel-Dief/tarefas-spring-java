@@ -76,6 +76,7 @@ public class AuthRepository {
             .orElse(null);
     }
 
+
     // salva o token no "banco de dados", no caso na memoria por enquanto
     private record SessionInfo(String username, Instant authentificatedAt) {}
 }
