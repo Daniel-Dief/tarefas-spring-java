@@ -58,17 +58,17 @@ public class AuthService {
             cookie.setPath("/");
             response.addCookie(cookie);
 
-            String target = (redirect == null || redirect.isBlank()) ? "/templates" : redirect;
+            String target = (redirect == null || redirect.isBlank()) ? "/templates/listar" : redirect;
 
             if(target.contains("://")){
-                target = "/templates";
+                target = "/templates/listar";
             }
 
             if(!target.startsWith("/")) {
                 target = "/" + target;
             }
 
-            return "redirect:" + redirect ;
+            return "redirect:" + target ;
     }
 
 
