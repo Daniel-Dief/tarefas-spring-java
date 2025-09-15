@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @Controller
 public class AuthService {
@@ -68,5 +70,57 @@ public class AuthService {
 
             return "redirect:" + redirect ;
     }
+
+
+    //API QUE VAI FZR O LOGOUT 
+    @PostMapping("/logout")
+    public String logout(
+        @RequestParam(name = "redirect", required = false) String redirect, 
+        @RequestParam(name = "token", required = false) String token,
+        HttpServletResponse response
+        ) {
+            // mata o token
+            if(token != null){
+                authRepository.logout(token);
+            }
+            // seta o cookie vazio
+            Cookie cookie = new Cookie("AUTH_TOKEN", "");
+            cookie.setHttpOnly(true);
+            cookie.setPath("/");
+            cookie.setMaxAge(0);
+            response.addCookie(cookie);
+            // redireciona para a pagina de login
+            String target = (redirect == null || redirect.isBlank()) ? "/login" : redirect;
+            return "redirect:" + target;
+    }
+
+    // API DE CADASTRAR
+    @PostMapping("/register")
+    public String register(
+        @RequestParam String username, 
+        @RequestParam String password, 
+        @RequestParam String confirmPassword,
+        Model model) {
+            
+            if(username == null || username.isBlank() || password == null || password.isBlank() 
+                || confirmPassword == null || confirmPassword.isBlank()) {
+                model.addAttribute("error", "Todos os campos devem ser preenchidos");
+                return "cadastro";
+            }
+
+            if(!password.equals(confirmPassword)){
+                model.addAttribute("error", "As senhas devem ser iguais");
+                return "cadastro";
+            }
+
+            boolean criouComSucesso = authRepository.register(username, password);
+            if(criouComSucesso){
+                return "login";
+            } else {
+                model.addAttribute("error", "Ocorreu um erro ao criar o usuario");
+                return "cadastro";
+            }
+    }
+    
 
 }
