@@ -18,10 +18,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.ifsc.tarefas.model.Prioridade;
 import com.ifsc.tarefas.model.Status;
 import com.ifsc.tarefas.model.Tarefa;
+import com.ifsc.tarefas.auth.RequestAuth;
 import com.ifsc.tarefas.model.Categoria;
 import com.ifsc.tarefas.repository.CategoriaRepository;
 import com.ifsc.tarefas.repository.TarefaRepository;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 // anotação pra dizer que é um controller
@@ -46,11 +48,20 @@ public class TemplateServices {
             @RequestParam(required = false) String titulo,
             @RequestParam(required = false) String responsavel, 
             @RequestParam(required = false) Status status,
-            @RequestParam(required = false) Prioridade prioridade) {
+            @RequestParam(required = false) Prioridade prioridade, 
+            HttpServletRequest req) {
         // o primeiro argumento é para como esse objeto sera chamado dentro da view
         // o segundo argumento é o objeto(s) que irei passar
         // se eu tenho titulo e ele não é vazio
-        var tarefas = tarefaRepository.findAll();
+        String user = RequestAuth.getUser(req);
+        String role = RequestAuth.getRole(req);
+            
+        var tarefas = role.equals("ADMIN") ? 
+            tarefaRepository.findAll() :
+            tarefaRepository.findByResponsavel(user);
+
+
+
         if (titulo != null && !titulo.trim().isEmpty()) {
             // Java transformando em stream
             // filtra as tarefas pelo titulo
