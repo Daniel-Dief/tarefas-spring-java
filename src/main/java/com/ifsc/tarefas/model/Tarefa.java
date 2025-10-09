@@ -1,18 +1,23 @@
 package com.ifsc.tarefas.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -137,6 +142,15 @@ public class Tarefa {
     public void setCategorias(Set<Categoria> categorias) {
         this.categorias = categorias;
     }
- 
     
+    @OneToMany(mappedBy = "tarefa", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Anexo> anexos = new ArrayList<>();
+    
+    public List<Anexo> getAnexos() {
+        return anexos;
+    }
+    
+    public void setAnexos(List<Anexo> anexos) {
+        this.anexos = anexos;
+    }
 }
